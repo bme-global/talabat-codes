@@ -1,8 +1,7 @@
 import { PrismaClient } from '@prisma/client';
+import codes from '../codes.js';
 
 const prisma = new PrismaClient();
-
-const codes = ['VT2gdyMP', 'IJscpIo2', '55tCjvBf', 'bciUdDVe', 'QxHT65jb'];
 
 async function main() {
     for (const code of codes) {
