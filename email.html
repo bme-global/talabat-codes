@@ -3,9 +3,39 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
+        <title>Talabat X Insomnia</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .banner {
+                width: 100%;
+                height: auto;
+            }
+            .code-container {
+                padding: 20px;
+                background-color: blueviolet;
+                color: white;
+                font-size: 20px;
+                text-align: center;
+            }
+            .code-container p {
+                margin: 0;
+            }
+        </style>
     </head>
     <body>
-        <p>Your code is: <%= code %></p>
+        <img
+            class="banner"
+            src="https://events.thebmegroup.com/wp-content/uploads/2023/12/insomnia-ticket-cover-01.jpg"
+            alt="Talabat x Insomnia Offer"
+        />
+        <p>Thank you for subscribing to Talabat x Insomnia offer. Please use the code below to avail the offer.</p>
+        <div class="code-container">
+            <p>Your code is: <%= code %></p>
+        </div>
     </body>
 </html>
