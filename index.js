@@ -1,85 +1,75 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client'; // Import Prisma namespace for types
+import sendEmail from './sendEmail.js';
+import { format } from 'date-fns';
 
 const app = express();
-
-const port = 4000;
-
+const prisma = new PrismaClient();
+const port = 3000;
 const apiKey = process.env.API_KEY;
 
-// Middleware to check for API key
-const checkApiKey = (req, res, next) => {
+app.use((req, res, next) => {
     const providedApiKey = req.headers['api-key'];
     if (!providedApiKey || providedApiKey !== apiKey) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
     next();
-};
-
-app.use(checkApiKey);
-app.use(express.json());
-
-app.get('/code', (req, res) => {
-    const prisma = new PrismaClient();
-    prisma.code
-        .findFirst({
-            where: {
-                used: false,
-            },
-            orderBy: {
-                id: 'asc',
-            },
-        })
-        .then((code) => {
-            if (code) {
-                res.json(code);
-            } else {
-                res.status(404).json({ error: 'No unused code found' });
-            }
-        })
-        .catch((e) => {
-            res.status(500).json({ error: 'Internal Server Error' });
-        })
-        .finally(async () => {
-            await prisma.$disconnect();
-        });
 });
 
-app.put('/code', (req, res) => {
-    const prisma = new PrismaClient();
-    const { codeId, ticketNumber } = req.body;
+app.use(express.json());
 
-    prisma.code
-        .findUnique({
-            where: {
-                id: codeId,
-            },
-        })
-        .then((code) => {
-            if (code && !code.used) {
-                return prisma.code.update({
-                    where: {
-                        id: codeId,
-                    },
-                    data: {
-                        used: true,
-                        ticket: ticketNumber,
-                    },
-                });
-            } else {
-                throw new Error('Code is already used or does not exist');
-            }
-        })
-        .then((code) => {
-            res.json(code);
-            console.log(`Code ${code.value} used for ticket ${code.ticket}`);
-        })
-        .catch((e) => {
-            res.status(500).json({ error: e.message });
-        })
-        .finally(async () => {
-            await prisma.$disconnect();
+app.put('/code', async (req, res) => {
+    const { ticketNumber, email } = req.body;
+
+    try {
+        const existingTicket = await prisma.code.findUnique({
+            where: { ticket: ticketNumber },
         });
+
+        if (existingTicket) {
+            return res.status(409).json({ error: 'Ticket number already exists' });
+        }
+
+        const code = await prisma.code.findFirst({
+            where: { used: false },
+            orderBy: { id: 'asc' },
+        });
+
+        if (!code) {
+            return res.status(404).json({ error: 'No unused code found' });
+        }
+
+        let updatedCode = await prisma.code.update({
+            where: { id: code.id },
+            data: {
+                used: true,
+                ticket: ticketNumber,
+                email,
+                usedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            },
+        });
+
+        console.log(`Code '${updatedCode.value}' used for ticket '${updatedCode.ticket}'`);
+
+        try {
+            const statusCode = await sendEmail(email, ticketNumber, updatedCode.value);
+            updatedCode = await prisma.code.update({
+                where: { id: updatedCode.id },
+                data: { sent: true },
+            });
+            res.json(updatedCode);
+            console.log(`Email sent to '${email}' with status ${statusCode}`);
+        } catch (emailError) {
+            console.error('Failed to send email:', emailError);
+            // Still return the updated code even if email fails
+            res.status(500).json({ error: 'Email sending failed', details: emailError.message });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    } finally {
+        await prisma.$disconnect();
+    }
 });
 
 app.listen(port, () => {

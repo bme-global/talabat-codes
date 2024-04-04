@@ -14,9 +14,11 @@ datasource db {
 }
 
 model Code {
-  id        Int      @id @default(autoincrement())
-  value     String   @unique
-  used      Boolean  @default(false)
-  ticket    Int?
-  updatedAt DateTime @updatedAt
+  id     Int     @id @default(autoincrement())
+  value  String  @unique
+  used   Boolean @default(false)
+  ticket String? @unique
+  sent   Boolean @default(false)
+  email  String?
+  usedAt String?
 }
