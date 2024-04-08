@@ -25,7 +25,19 @@ function logError(message: string) {
         `${format(new Date(), 'yyyy-MM-dd HH:mm:ss')} - ${message}\n`,
         (err) => {
             if (err) {
-                console.error('Failed to write to log file:', err);
+                console.error('Failed to write to error log file:', err);
+            }
+        }
+    );
+}
+
+function logInfo(message: string) {
+    fs.appendFile(
+        path.join(__dirname, '../info.log'),
+        `${format(new Date(), 'yyyy-MM-dd HH:mm:ss')} - ${message}\n`,
+        (err) => {
+            if (err) {
+                console.error('Failed to write to info log file:', err);
             }
         }
     );
