@@ -1,14 +1,14 @@
-import express from 'express';
-import { PrismaClient, Prisma } from '@prisma/client'; // Import Prisma namespace for types
-import sendEmail from './sendEmail.js';
+import express, { Express, Request, Response } from "express";
+import { PrismaClient } from '@prisma/client';
+import sendEmail from './sendEmail';
 import { format } from 'date-fns';
 
-const app = express();
+const app: Express = express();
 const prisma = new PrismaClient();
 const port = 3000;
 const apiKey = process.env.API_KEY;
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next) => {
     const providedApiKey = req.headers['api-key'];
     if (!providedApiKey || providedApiKey !== apiKey) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -62,11 +62,11 @@ app.put('/code', async (req, res) => {
         } catch (emailError) {
             console.error('Failed to send email:', emailError);
             // Still return the updated code even if email fails
-            res.status(500).json({ error: 'Email sending failed', details: emailError.message });
+            res.status(500).json({ error: 'Email sending failed', details: (emailError as Error).message });
         }
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error', details: error.message });
+        res.status(500).json({ error: 'Internal Server Error', details: (error as Error).message });
     } finally {
         await prisma.$disconnect();
     }

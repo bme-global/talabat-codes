@@ -1,11 +1,13 @@
 import ejs from 'ejs';
 import sgMail from '@sendgrid/mail';
+import path from 'path';
 
-const sendEmail = async (email, ticketNumber, code) => {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const sendEmail = async (email: string, ticketNumber: string, code: string) => {
+    const apiKey = process.env.SENDGRID_API_KEY || '';
+    sgMail.setApiKey(apiKey);
 
     return new Promise((resolve, reject) => {
-        ejs.renderFile('./email.html', { code: code }, function (err, data) {
+        ejs.renderFile(path.join(__dirname, '../templates/email.html'), { code: code }, function (err, data) {
             if (err) {
                 console.error(err);
             } else {
