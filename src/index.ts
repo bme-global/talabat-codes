@@ -25,7 +25,7 @@ app.use((req: Request, res: Response, next) => {
 
 function logError(message: string) {
     fs.appendFile(
-        path.join(__dirname, '../error.log'),
+        path.join(__dirname, '../logs/error.log'),
         `${format(new Date(), 'yyyy-MM-dd HH:mm:ss')} - ${message}\n`,
         (err) => {
             if (err) {
@@ -37,7 +37,7 @@ function logError(message: string) {
 
 function logInfo(message: string) {
     fs.appendFile(
-        path.join(__dirname, '../info.log'),
+        path.join(__dirname, '../logs/info.log'),
         `${format(new Date(), 'yyyy-MM-dd HH:mm:ss')} - ${message}\n`,
         (err) => {
             if (err) {

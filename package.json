@@ -9,7 +9,7 @@
     "dev": "nodemon src/index.ts",
     "db:seed": "node ./prisma/seed.js",
     "db:push": "npx prisma db push",
-    "deploy": "rsync -avz  --exclude 'node_modules' --exclude 'prisma/codes.js' --exclude 'error.log' --exclude 'info.log' ./ root@bmedev.net:~/talabat-vouchers/ && ssh root@bmedev.net 'set -e; cd ~/talabat-vouchers; docker build -t talabat-vouchers-server .; docker stop talabat-vouchers-server || true; docker rm talabat-vouchers-server || true; docker run -d -p 6004:3000 --name talabat-vouchers-server talabat-vouchers-server'"
+    "deploy": "rsync -avz  --exclude 'node_modules' --exclude 'prisma/codes.js' --exclude 'logs/error.log' --exclude 'logs/info.log' ./ root@bmedev.net:~/talabat-vouchers/ && ssh root@bmedev.net 'set -e; cd ~/talabat-vouchers; docker build -t talabat-vouchers-server .; docker stop talabat-vouchers-server || true; docker rm talabat-vouchers-server || true; docker run -d --restart=unless-stopped -p 6004:3000 -v talabat-vouchers-logs:/usr/src/app/logs --name talabat-vouchers-server talabat-vouchers-server'"
   },
   "author": "",
   "license": "ISC",
