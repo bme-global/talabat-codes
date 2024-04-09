@@ -4,6 +4,7 @@ import sendEmail from './sendEmail';
 import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
+import { log } from 'console';
 
 const app: Express = express();
 const prisma = new PrismaClient();
@@ -47,7 +48,7 @@ app.use(async (req: Request, res: Response, next) => {
         await prisma.$connect();
         next();
     } catch (error) {
-        logError('Database connection error');
+        logError(`Database connection error [#${req.body.ticketNumber}]`);
         res.status(500).json({ error: 'Database connection error' });
     }
 });
@@ -69,6 +70,14 @@ async function getFirstUnusedCode() {
 
     if (code) {
         return code;
+    }
+}
+
+async function sendVoucherEmail(email: string, ticketNumber: string, code: string) {
+    try {
+        return await sendEmail(email, ticketNumber, code);
+    } catch (error) {
+        logError(`Failed to send email [#${ticketNumber}]`);
     }
 }
 
@@ -101,27 +110,17 @@ app.put('/code', async (req, res) => {
         return res.status(404).json({ error: 'No unused codes found' });
     }
 
-    let updatedCode = await updateCode(code.id, ticketNumber, email);
+    const emailResponse = await sendVoucherEmail(email, ticketNumber, code.value);
 
-    try {
-        try {
-            const statusCode = await sendEmail(email, ticketNumber, updatedCode.value);
-            updatedCode = await prisma.code.update({
-                where: { id: updatedCode.id },
-                data: { sent: true },
-            });
-            res.json(updatedCode);
-            console.log(`Email sent to '${email}' with status ${statusCode}`);
-        } catch (emailError) {
-            console.error('Failed to send email:', emailError);
-            // Still return the updated code even if email fails
-            res.status(500).json({ error: 'Email sending failed', details: (emailError as Error).message });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Internal Server Error', details: (error as Error).message });
-    } finally {
-        await prisma.$disconnect();
+    if (!emailResponse) {
+        return res.status(500).json({ error: 'Failed to send email' });
+    }
+
+    const updatedCode = await updateCode(code.id, ticketNumber, email);
+
+    if (updatedCode) {
+        logInfo(`Voucher code '${code.value}' sent to '${email}' for ticket '#${ticketNumber}'`);
+        return res.json({ 'Voucher Code': updatedCode });
     }
 });
 

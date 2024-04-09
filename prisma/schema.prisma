@@ -18,7 +18,6 @@ model Code {
   value  String  @unique
   used   Boolean @default(false)
   ticket String? @unique
-  sent   Boolean @default(false)
   email  String?
   usedAt String?
 }
