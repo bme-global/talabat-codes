@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
 
-const isServiceEnabled = false;
+const isServiceEnabled = true;
 
 const app: Express = express();
 const prisma = new PrismaClient();
