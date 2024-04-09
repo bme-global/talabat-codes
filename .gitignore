@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 codes.js
+.DS_Store
