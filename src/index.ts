@@ -5,12 +5,11 @@ import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
 
-const isServiceEnabled = true;
-
 const app: Express = express();
 const prisma = new PrismaClient();
 const port = 3000;
 const apiKey = process.env.API_KEY;
+const isServiceEnabled = process.env.SERVICE_ENABLED === 'true';
 
 app.use(express.static('public'));
 
