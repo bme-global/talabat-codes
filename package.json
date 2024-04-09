@@ -7,7 +7,7 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "db:seed": "node ./prisma/seed.ts",
+    "db:seed": "node ./prisma/seed.js",
     "db:push": "npx prisma db push"
   },
   "author": "",

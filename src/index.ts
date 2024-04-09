@@ -4,7 +4,6 @@ import sendEmail from './sendEmail';
 import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
-import { log } from 'console';
 
 const app: Express = express();
 const prisma = new PrismaClient();
