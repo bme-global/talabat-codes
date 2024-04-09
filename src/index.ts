@@ -4,14 +4,18 @@ import sendEmail from './sendEmail';
 import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
-import { log } from 'console';
 
 const app: Express = express();
 const prisma = new PrismaClient();
 const port = 3000;
 const apiKey = process.env.API_KEY;
 
+app.use(express.static('public'));
+
 app.use((req: Request, res: Response, next) => {
+    if (req.path.startsWith('/uploads')) {
+        return next();
+    }
     const providedApiKey = req.headers['api-key'];
     if (!providedApiKey || providedApiKey !== apiKey) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -75,7 +79,7 @@ async function getFirstUnusedCode() {
 
 async function sendVoucherEmail(email: string, ticketNumber: string, code: string) {
     try {
-        return await sendEmail(email, ticketNumber, code);
+        return await sendEmail(email, code);
     } catch (error) {
         logError(`Failed to send email [#${ticketNumber}]`);
     }
@@ -119,7 +123,7 @@ app.put('/code', async (req, res) => {
     const updatedCode = await updateCode(code.id, ticketNumber, email);
 
     if (updatedCode) {
-        logInfo(`Voucher code '${code.value}' sent to '${email}' for ticket '#${ticketNumber}'`);
+        logInfo(`Voucher id '${code.id}' sent to '${email}' for ticket '#${ticketNumber}'`);
         return res.json({ 'Voucher Code': updatedCode });
     }
 });

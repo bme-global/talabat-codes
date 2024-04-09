@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import sgMail from '@sendgrid/mail';
 import path from 'path';
 
-const sendEmail = async (email: string, ticketNumber: string, code: string) => {
+const sendEmail = async (email: string, code: string) => {
     const apiKey = process.env.SENDGRID_API_KEY || '';
     sgMail.setApiKey(apiKey);
 
@@ -14,11 +14,11 @@ const sendEmail = async (email: string, ticketNumber: string, code: string) => {
                 const msg = {
                     to: email,
                     from: {
-                        name: 'Talabat X Insomnia',
+                        name: 'Talabat X Insomnia Egypt',
                         email: 'events@thebmegroup.com',
                     },
-                    subject: `[#${ticketNumber}] Talabat EGP 100 off promo`,
-                    text: 'When you order from Talabat, use the code below to get EGP 100 off your order',
+                    subject: `Talabat 100 EGP off Voucher`,
+                    text: 'Enjoy 100 EGP off your next Talabat order courtesy of Talabat x Insomnia Egypt Gaming Festival.',
                     html: data,
                 };
 
