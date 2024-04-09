@@ -5,6 +5,8 @@ import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
 
+const isServiceEnabled = false;
+
 const app: Express = express();
 const prisma = new PrismaClient();
 const port = 3000;
@@ -98,6 +100,10 @@ async function updateCode(codeId: number, ticketNumber: string, email: string) {
 }
 
 app.put('/code', async (req, res) => {
+    if (!isServiceEnabled) {
+        return res.status(503).json({ error: 'Service temporarily unavailable' });
+    }
+
     const { ticketNumber, email } = req.body;
 
     if (!ticketNumber || !email) {
