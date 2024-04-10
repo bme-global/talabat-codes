@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-const codes = require('./codes.js');
+const codes = require('./codes.js'); // Import the codes from the codes.js file in array format
 
 const prisma = new PrismaClient();
 
