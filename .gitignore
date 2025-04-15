@@ -131,3 +131,9 @@ dist
 
 codes.js
 .DS_Store
+
+# Database files
+*.db
+
+# voucher codes
+*.csv

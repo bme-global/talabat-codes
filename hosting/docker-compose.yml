@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  talabat-codes:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: talabat-codes
+    restart: unless-stopped
+    ports:
+      - "${PORT}:3000"
+    volumes:
+      - ./database:/usr/src/app/prisma/database
+      - ./logs:/usr/src/app/logs
+    environment:
+      - DATABASE_URL=file:./database/dev.db
+      - API_KEY=${API_KEY}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SERVICE_ENABLED=${SERVICE_ENABLED}
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npm start
+      "
+
+volumes:
+  talabat-codes-logs:
