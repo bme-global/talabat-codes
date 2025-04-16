@@ -12,6 +12,7 @@ services:
     volumes:
       - ./database:/usr/src/app/prisma/database
       - ./logs:/usr/src/app/logs
+      - ./data:/usr/src/app/data
     environment:
       - DATABASE_URL=file:./database/dev.db
       - API_KEY=${API_KEY}
