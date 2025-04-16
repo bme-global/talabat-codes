@@ -37,7 +37,7 @@ git clone https://github.com/yourusername/talabat-codes.git
 npm install
 ```
 
-3\. Copy the `.env.example` file to `.env` and fill in your environment variables.
+3\. Copy the `.env.example` file to `.env` and fill in your environment variables.
 
 4\. Generate Prisma Client
 
@@ -67,10 +67,16 @@ npm run start
 
 ### Database
 
-This project uses Prisma for database management. To seed the database, run:
+This project uses Prisma for database management.
+
+To seed the database with voucher codes:
 
 ```bash
-npm run db:seed
+# Using default CSV file (./data/vouchers.csv)
+npm run seed:db
+
+# Or specify a custom CSV file
+npm run seed:db ./path/to/your-codes.csv
 ```
 
 To push the Prisma schema to the database, run:
@@ -78,6 +84,20 @@ To push the Prisma schema to the database, run:
 ```bash
 npm run db:push
 ```
+
+### Sending Coupons to Email Lists
+
+To send coupon codes to a list of email addresses from a CSV file:
+
+```bash
+# Using default CSV file (./data/emails.csv)
+npm run send:coupons
+
+# Or specify a custom file and rate limit
+npm run send:coupons ./path/to/your-emails.csv 5
+```
+
+For more details, see [Sending Coupons Documentation](docs/SENDING_COUPONS.md).
 
 ### Deployment
 
