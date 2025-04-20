@@ -14,6 +14,10 @@ const isServiceEnabled = process.env.SERVICE_ENABLED === 'true';
 app.use(express.static('public'));
 app.use(express.json());
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use((req: Request, res: Response, next) => {
   if (req.path.startsWith('/uploads')) {
     return next();
